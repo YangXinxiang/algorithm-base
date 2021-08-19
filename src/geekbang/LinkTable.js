@@ -1,3 +1,11 @@
+/**
+经常用来检查链表代码是否正确的边界条件有这样几个：
+如果链表为空时，代码是否能正常工作？
+如果链表只包含一个结点时，代码是否能正常工作？
+如果链表只包含两个结点时，代码是否能正常工作？
+代码逻辑在处理头结点和尾结点的时候，是否能正常工作？
+
+ */
 function Node(data, key=""){
     this.data = data;
     this.next = null;
@@ -49,6 +57,47 @@ const prop = {
         n.next = current.next;
         n.pre = current;
         current.next = n;
+    },
+
+    find(data){
+        let current = this.head;
+        while(current){
+            if(current.data === data){
+                return current;
+            }
+            current = current.next;
+        }
+        return undefined;
+    },
+    findLast(){
+        let current = this.head;
+        while(current){
+            if(current.next === null){
+                return current;
+            }
+            current = current.next;
+        }
+        return undefined;
+    },
+    /**
+     * 按双向链表方式实现链表翻转
+     * @returns 
+     */
+    reserve(){
+        let current = this.head;
+        let headNode = null;
+        while(current){
+            // 交换 next 和 pre
+            const temp = current.next;
+            current.next = current.pre;
+            current.pre = temp;
+            if(current.pre === null){
+                headNode =  current;
+            }
+            current = current.pre;
+        }
+        this.head = headNode;
+        return this;
     }
 };
 Object.assign(LinkTable.prototype, prop);
@@ -59,8 +108,13 @@ function test(){
     lt.add("b");
     lt.add("c");
     lt.add("d");
-    lt.insert("xx", "b");
+    //lt.insert("xx", "b");
+    console.log(lt);
+    lt.reserve()
+    console.log(`after reverse`);
     console.log(lt);
 }
 
 test();
+
+module.exports = {LinkTable};
