@@ -14,10 +14,14 @@ const prop = {
     enqueue(data){
         if(this.container.length >= this.capacity){
             // 在某些语言实现中，可以考虑搬移数据
-            throw new Error("Opps, error, the container is full")
+            // throw new Error("Opps, error, the container is full");
+            // 数据满了的时候，统一做一次数据删除
+            this.container.splice(0, this.head);
+            this.tail = this.tail - this.head; // 更新head和tail指针
+            this.head = 0;
         }
         this.container.push(data);
-        this.tail = this.container.length - 1
+        this.tail = this.container.length;
     },
     /**
      * 出队删除数据的时候，不用数组的shift，否则每次出队，都需要O(n**2)的时间复杂度。
@@ -25,7 +29,7 @@ const prop = {
      * @returns 
      */
     dequeue(){          
-        if(this.head  > this.tail){
+        if(this.head  >= this.tail){
             this.container = [];
             this.head = 0;
             this.tail = 0;
@@ -45,10 +49,13 @@ function test1(){
     aq.enqueue("b");
     aq.enqueue("c");
     aq.enqueue("d");
-   // aq.enqueue("e");
+    aq.enqueue("e");
     console.log(aq.dequeue());
     console.log(aq.dequeue());
+    console.log(aq)
     aq.enqueue("f");
+    console.log(aq)
+    console.log(aq.dequeue());
     console.log(aq.dequeue());
     console.log(aq.dequeue());
     console.log(aq.dequeue());
