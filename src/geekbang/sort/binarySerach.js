@@ -7,8 +7,9 @@
  */
 function binarySearch(arr, target){
     let low = 0, high = arr.length-1;
-    // let middle = Math.floor((low+high)/2); // 这种算法有溢出风险，但是基本也不会遇到，知道就好。
+    // 找到中间位置
     let middle = Math.floor(low + (high - low)/2);
+    // let middle = Math.floor((low+high)/2); // 这种算法有溢出风险，但是基本也不会遇到，知道就好。
     for(; low<=high; ){
         if(arr[middle] === target){
             return middle;
@@ -47,8 +48,21 @@ function binarySearch2(arr, target){
 }
 
 // 通过递归实现
-function binarySearch3(arr, target){
-    
+function binarySearch3(arr, target, low=0, high = arr.length-1){
+    const mid = Math.floor(low + (high-low)/2);
+    if(low > high){
+        return -1
+    }
+    if(arr[mid] === target){
+        return mid;
+    }else{
+        if(arr[mid] > target){
+            high = mid -1;
+        }else{
+            low = mid +1;
+        }
+        return binarySearch3(arr, target, low, high);
+    }
 }
 
 function test1(){
@@ -60,5 +74,9 @@ function test1(){
     console.log(binarySearch2(arr, 67));
     console.log(binarySearch2(arr, 876));
     console.log(binarySearch2(arr, 7));
+    console.log(`~~~~~~~~~~~~~`)
+    console.log(binarySearch3(arr, 67));
+    console.log(binarySearch3(arr, 876));
+    console.log(binarySearch3(arr, 7));
 }
 test1()
