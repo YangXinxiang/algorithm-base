@@ -36,18 +36,30 @@ function createTableArr(rows, columns, pad=0){
 }
 
 
-function minDistDP(){
+function minDistDP() {
     const states = createTableArr(rowsCount, columnCount);
     states[0][0] = table[0][0];
 
-    for(let row=0; i<rowsCount; row++){
-        // 向下走
+    for(let row=0; row<rowsCount; row++){
+        // 先处理好首行和首列
+        for(let column=0; column <columnCount; column++){
+            if(row ===0 && column>0){
+                states[row][column] = states[row][column-1] + table[row][column]
+            }            
+            if(column===0 && row>0 ){
+                states[row][column] = states[row-1][column] + table[row][column]
+            }
+            
+        }
         
     }
+
+    console.log(states);
 }
 
 function test1(){
-    minDistBT();
+    // minDistBT();
+    minDistDP()
 }
 
 function startTest(){
