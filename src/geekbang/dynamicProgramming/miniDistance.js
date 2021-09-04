@@ -8,20 +8,30 @@ const table = [
 ]
 const rowsCount = 4;
 const columnCount = 4;
-let step;
-function minDistBT(row=0, column=0, step=0){
-    if(row === rowsCount-1 && column ===columnCount-1){
+let step =0;
+function minDistBT(row=0, column=0, step=0,rotes=[]){
+    if(row === rowsCount && column ===columnCount){
         console.log(`step = ${step}`);
+        // console.log(rotes);
         return;
     }
     // 往下走一步
+    const newRotes = [...rotes];
     if(row+1 < rowsCount){
-        minDistBT(row+1,column, step + table[row][column]);
+        newRotes.push({
+            value: table[row][column],
+            dir:"dwn"
+        })
+        minDistBT(row+1,column, step + table[row][column], newRotes);
     }
     // 
     // 或者往右走一步
     if(column+1 < columnCount){
-        minDistBT(row,column+1, step + table[row][column]);
+        newRotes.push({
+            value: table[row][column],
+            dir:"rig"
+        })
+        minDistBT(row,column+1, step + table[row][column], newRotes);
     }    
 }
 
@@ -38,17 +48,22 @@ function createTableArr(rows, columns, pad=0){
 
 function minDistDP() {
     const states = createTableArr(rowsCount, columnCount);
+    // 处理首行、首列
     states[0][0] = table[0][0];
+    for(let row=1; row<rowsCount; row++){
+        states[row][0] = states[row-1][0] + table[row][0];
+    }
+    for(let column=1; column< columnCount; column++){
+        states[0][column] = states[0][column-1] + table[0][column]
+    }
 
-    for(let row=0; row<rowsCount; row++){
+    for(let row=1; row<rowsCount; row++){
         // 先处理好首行和首列
-        for(let column=0; column <columnCount; column++){
-            if(row ===0 && column>0){
-                states[row][column] = states[row][column-1] + table[row][column]
-            }            
-            if(column===0 && row>0 ){
-                states[row][column] = states[row-1][column] + table[row][column]
-            }
+        for(let column=1; column <columnCount; column++){
+            const left = states[row][column-1];
+            const up = states[row-1][column];
+            const min = Math.min(left, up) 
+            states[row][column] = min + table[row][column];
             
         }
         
@@ -58,7 +73,8 @@ function minDistDP() {
 }
 
 function test1(){
-    // minDistBT();
+    minDistBT();
+    console.log(`~~~~~~~~~~`)
     minDistDP()
 }
 
