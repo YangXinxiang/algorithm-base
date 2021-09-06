@@ -171,6 +171,35 @@ function minDistDP2(table){
 
 
 
+const cache = new Map();
+let cacheUseCount = 0;
+// 动态规划 ：  递归动态规划方式实现最小距离问题，特别像备忘录+回溯的方式。
+function minDistDP3(table, row, column){
+    if(row===0 && column ===0){
+        return table[row][column]
+    }
+    const cacheKey = `row${row}_column${column}`;
+    if(cache.get(cacheKey) >0) {
+        cacheUseCount++;
+        console.log(`minDistDP3 :: end, cacheUseCount = ${cacheUseCount}`)
+        return cache.get(cacheKey);
+    }
+    // 上一个
+    let up = 0;
+    if(row-1>=0){
+        up = minDistDP3(table, row-1, column);
+    }
+    let left = 0;
+    if(column -1 >=0){
+        left = minDistDP3(table, row, column-1);
+    }
+    const current = table[row][column] + Math.min(up, left);
+    cache.set(cacheKey, current);
+    console.log(`minDistDP3 :: end, current = ${current}`)
+    return current
+}
+
+
 
 
 
@@ -184,9 +213,11 @@ function test1(){
 
 function test2(){
     //minDistBT5(0,0,0,table3,4);
-    minDisByBT6(0,0,table2,4,0)
-    minDistBT(table2,0,0,0,4,4)
-    minDistDP2(table);
+    // minDisByBT6(0,0,table2,4,0)
+    // minDistBT(table2,0,0,0,4,4)
+    // minDistDP2(table);
+    const result = minDistDP3(table,table.length-1, table.length-1);
+    console.log(`test2 :: end, minDistDP3 result = ${result}`)
 }
 function startTest(){
     //test1()
