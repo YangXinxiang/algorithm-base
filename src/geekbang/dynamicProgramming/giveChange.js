@@ -73,21 +73,61 @@ function getRest(value, rest){
 }
 
 // 用动态规划解决
-function giveChangeDP(rest=totalNeedGive, totalNeedGive = totalNeedGive){
+function giveChangeDP(rest, totalNeedGive){
     const states = createTableArr(values.length, totalNeedGive, -1);
     // 首元素
     const first = 
     // 不用第一个面值
-    states[0]
+    states[0][totalNeedGive] = totalNeedGive;
+    
+    // 用第一个
+    let index =0;
+    const maxSheets = Math.floor(rest/values[index]);
+    const newRest = rest%values[index];
+    states[0][maxSheets] = newRest;
+    for(let row=1; row< values.length; row++){
+        // 不用该面值，直接拷贝上一行数据
+        for(let column = 1; column < totalNeedGive; column++){
+            
+            if(states[row-1][column] >=0) {
+                states[row][column] = states[row-1][column];
+            }
+        }
+        // 用该面值，根据上一个值推导下一个值
+        for(let column = 1; column <= totalNeedGive; column++){
+            const preRest = states[row-1][column];
+            if(preRest >=0 && preRest >= values[row]) {
+                const maxSheets2 = preRest/values[row];
+                const newRest2 = preRest%values[row];
+                states[row][maxSheets2] = newRest2;
+            }
+        }
+    }
+    // 倒推张数，找到最优解
+    const lastArrow = states[values.length-1];
+    const bestIndex = lastArrow.findIndex((value)=> value ===0);
+    let row = values.length-1
+    while(row>0){
+        let upRow = row - 1;
+        if(states[upRow][bestIndex]!=0) {
+
+        }
+        row--;
+    }
+
+    console.log(`giveChangeDP :: end, bestIndex = ${bestIndex}`)
+    console.log(states)
 }
 
 
 
 function test1(){
-    giveChangeTX(); // 用贪心算法测试
-    console.log(`will use back tracking~~`)
-    giveChangeBT()
-    console.log(`minSheets = ${minSheets}`)
+    // giveChangeTX(); // 用贪心算法测试
+    // console.log(`will use back tracking~~`)
+    // giveChangeBT()
+    // console.log(`minSheets = ${minSheets}`)
+
+    giveChangeDP(totalNeedGive, totalNeedGive)
 }
 
 
