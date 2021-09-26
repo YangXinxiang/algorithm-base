@@ -118,6 +118,7 @@ function findMinnDP(data){
     states[0][0] = data[0][0];
     console.log(states)
     console.log(`~~~~~~~~~~~`)
+    // 开始动态规划
     for(let rowIndex = 0; rowIndex< sideCont -1; rowIndex ++ ){
         const row = data[rowIndex];
         const nextRowIndex = rowIndex+1;
@@ -126,7 +127,6 @@ function findMinnDP(data){
             const current = states[rowIndex][column];
             // 看左下角的值
             const left = current + nextRow[column];
-            // debugger
             if(states[nextRowIndex][column] === 0){
                 states[nextRowIndex][column] = left
             }else{
@@ -154,16 +154,16 @@ function findMinnDP(data){
     const route = [data[sideCont -1][minIndex]];
     for(let rowIndex = sideCont -1; rowIndex > 0; rowIndex --){
         let preRow = states[rowIndex -1];
-        
+        let preData = data[rowIndex -1];
         let preIndex = 0;
         if(minIndex ===0){
             preIndex = 0
-        }else if(minIndex === preRow.length){
+        }else if(minIndex === preData.length){
             preIndex = minIndex - 1;
         }else{
-            // 父节点有两个
+            // 父节点有两个，为了方便起见，就只找一条路径就好。
             let pLeft = minIndex-1, pRight = minIndex;
-            if(min === preRow[pLeft]){
+            if(min === preRow[pLeft] + data[rowIndex][minIndex]){
                 preIndex = pLeft
             }else{
                 preIndex = pRight
@@ -173,10 +173,8 @@ function findMinnDP(data){
         minIndex = preIndex;
         route.push(data[rowIndex -1][minIndex]);
     }
-    route.push(data[0][0])
-
     console.log(states);
-    console.log(`route = ${route}`)
+    console.log(`route = ${route}, len = ${route.length}`)
 }
 
 
