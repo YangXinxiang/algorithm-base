@@ -6,7 +6,7 @@
 const {createTableArr} = require("../../util")
  const values = [11, 5, 1]; // 加入认为已经排好序
  const totalNeedGive = 15;
- function giveChangeBT(){
+ function giveChangeDP(){
      const states = createTableArr(values.length, totalNeedGive+1, -1)
      // 特殊处理下第一行
      let restNeed = totalNeedGive
@@ -49,6 +49,34 @@ const {createTableArr} = require("../../util")
 
  }
 
+
+ 
  
 
- giveChangeBT();
+ giveChangeDP();
+
+ // 川哥版本的动态规划找零，精炼！
+function coin2Change(coins = [11, 5, 1], amount = 15) {
+  // 最大值假设就是要求和的数量加上1，这个一定是最大的，再多的硬币也就是1分的全部构成
+  const max = amount +1;
+  // 初始化dp数组，初始化到大小为金额大小再加1，因为dp的第一个元素是0
+  const dp = new Array(amount +1)
+  dp.fill(max)
+  dp[0] = 0;
+
+  // 外层循环就是构建F(0)到F(i)的过程
+  for(let i = 1; i<=amount; i++){
+    // 内层循环是遍历整个零钱数组的过程
+    for(const coin of coins) {
+      if(coin <= i){
+        dp[i] = Math.min(dp[i], dp[i-coin] + 1)
+      }
+    }
+  }
+
+  return dp[amount] > amount ? -1 : dp[amount] ;
+}
+
+const rst2 = coin2Change([11, 5, 1], 4);
+console.log(`~~~~~~~`);
+console.log(rst2)
