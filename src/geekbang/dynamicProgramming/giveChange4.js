@@ -212,9 +212,10 @@ function giveChangeTX(values, rest, index=0, sheets=0, routes=[]){
   // 川哥版本的动态规划找零，精炼！
 /**
  * 我们采用自下而上的方式进行思考
- * 定义F(i)为组成金额 i 所需最少的硬币数量。
+ * 定义F(i)为组成金额 i 所需最少的硬币数量。 初始化的时候，F(i)初始化为一个很大的数（大于需要找零的钱即可）
  * 假设在计算F(i)之前，我们已经计算出F(0) 到F(i-1)的答案。则F(i)对应的状态转移方程应为：
- * F(i) = Min(j=0->n-1) F(i-Cj) + 1
+ * F(i) = min( F(i), F(i-Cj) + 1 );  j=0->n-1; n=可用硬币面值类型数
+ * 也就是，第 i 块钱的时候，要分别尝试去使用每一个可用面值的钱一次（i-coin），此时使用过一次硬币，数量要+1，因此状态转移方程如上所示。
  * 其中Cj代表的是第 j 枚硬币的面值，即我们枚举最后一枚硬币面额是Cj
  * 那么需要从 i-Cj 这个金额的状态 F(i-Cj) 转移过来
  * 再算上枚举的这枚硬币数量1的贡献
@@ -223,14 +224,13 @@ function giveChangeTX(values, rest, index=0, sheets=0, routes=[]){
  * @param {*} amount 
  * @returns 
  */
-function coin2Change2(coins = [11, 5, 1], amount = 15) {
+function coin2Change(coins = [11, 5, 1], amount = 15) {
   // 最大值假设就是要求和的数量加上1，这个一定是最大的，再多的硬币也就是1分的全部构成
   const max = amount +1;
   // 初始化dp数组，初始化到大小为金额大小再加1，因为dp的第一个元素是0
   const dp = new Array(amount +1)
   dp.fill(max)
   dp[0] = 0;
-
   // 外层循环就是构建F(0)到F(i)的过程
   for(let i = 1; i<=amount; i++){
     // 内层循环是遍历整个零钱数组的过程
@@ -242,10 +242,71 @@ function coin2Change2(coins = [11, 5, 1], amount = 15) {
       }
     }
   }
-
+  // 有可能凑不足需要的钱，返回 -1
   return dp[amount] > amount ? -1 : dp[amount] ;
 }
+// 测试
+const amount = 10
+const coins = [11, 6, 3]
+const rst = coin2Change(coins, amount);
+console.log(`call coin2Change end, rst = ${rst}`);
+// console.log(rst)
 
-const rst3 = coin2Change2([11, 5, 1], 100);
-console.log(`~~~~~~~`);
-console.log(rst3)
+function coin2Change3(coins, amount){
+  const dp = new Array(amount+1);
+  dp.fill(amount + 1); // 默认填充一个很大的数，比要找的钱数大。
+  dp[0] = 0;
+  for(let i=1; i<=amount; i++){
+    // 每一次要凑的钱，都尝试用一遍所有可用面值，最后选最小的
+    for(const coin of coins){
+      if(i >= coin) {
+        dp[i] = Math.min(dp[i], dp[i-coin] + 1);
+      }
+    }
+  }
+
+  return dp[amount] > amount ? -1 : dp[amount];
+}
+
+const rst4 = coin2Change3(coins, amount);
+console.log(`coin2Change3~~~~~~~`);
+console.log(rst4)
+
+/**
+ * 递归动态规划实现找零需求
+ * @param {*} coins , 可用的币种数组，每种币种梳理无限制。
+ * @param {*} amount , 需要凑足的钱数
+ * @returns totalMin, -1 或者凑足需要找零 amount 所需的最少硬币数
+ */
+function coin2ChangeR(coins, amount){
+  // 再包装一下，主要是处理不满足条件的场景。同时做备忘录缓存
+  const cache = new Map(); 
+  // 递归动态规划实现找零 
+  function change(coins, amount){
+    if(amount === 0){
+      return 0;
+    }
+    // 备忘录缓存优化
+    if(cache.get(amount)){
+      return cache.get(amount);
+    }
+    const counts =[];
+    // 对当前的amount, 每一个都尝试使用一下所有面值币种硬币，然后取最小值
+    for(const coin of coins){
+      if(coin <= amount) {
+        const count = change(coins, amount - coin) +1;
+        counts.push(count)
+      }
+    } 
+    const minCount = Math.min(...counts);
+    cache.set(amount, minCount)
+    return minCount
+  }
+  const totalMin = change(coins, amount)
+  return totalMin > amount ? -1 : totalMin  
+}
+
+const rstR = coin2ChangeR(coins, amount);
+console.log(`coin2ChangeR :: call end, rstR = ${rstR}`);
+console.log(rstR)
+
