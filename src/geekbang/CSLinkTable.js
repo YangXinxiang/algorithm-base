@@ -56,6 +56,8 @@ class CSLinkTable{
                 n.next = next
                 return
             }
+            // 如果没找到数据，向后滑动
+            current = current.next
         }
         
         // 处理只有一个节点，该节点就是要找的数据，以及
@@ -139,14 +141,14 @@ function test1(){
     const lts = new CSLinkTable();
     lts.add(1)
     lts.add(3)
-    // lts.add(5)
-    // lts.add(7)
+    lts.add(5)
+    lts.add(7)
     // lts.add(9)
     //lts.remove(5)
-    lts.reverse()
-    // lts.insertAfter(3,4)
-    // lts.insertAfter(5,6)
-    // lts.insertAfter(9,10)
+    //lts.reverse()
+    lts.appendAfter(4,3)
+    // lts.appendAfter(5,6)
+    // lts.appendAfter(9,10)
     console.log(lts)
 }
 
