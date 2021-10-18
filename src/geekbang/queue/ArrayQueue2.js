@@ -87,3 +87,4 @@ function startTest(){
 }
 
 startTest()
+module.exports = {ArrayQueue}
