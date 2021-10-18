@@ -1,5 +1,6 @@
 /**
  * 双向循环链表  DCLinkTable
+ * 目前添加、删除、插入、反转功能都已OK
  */
 
 /**
@@ -88,23 +89,70 @@ class DCLinkTable {
         return this
     }
 
+    /**
+     * 在指定节点originalData后面插入数据data节点，如果没有originalData，插入到链尾。
+     * @param {*} data 
+     * @param {*} originalData 
+     * @returns 
+     */
     insertAfter(data, originalData) {
+        if(!this.head){
+            return this.add(data)
+        }
+        let current = this.head
+        // 这里用do while循环，规避掉要特殊处理最后一个节点的情况，一开始的时候 current 就是 this.head，但是也要进入循环体一次，
+        // 后面循环的过程中, current 都不等于this.head，最后一个节点再滑动一次 current = current.next
+        // 此时 current 等于this.head，就不进入循环体了。
+        do{
+            // 找到数据节点，或者到达最后一个节点（不管是不是要找的数据），附加到该节点后面。
+            if(current.data === originalData || current.next === this.head){
+                const n = new Node(data)
+                const next = current.next
+                current.next = n
+                n.pre = current
+                n.next = next
+                next.pre = n
+                return this
+            }
+            // 如果没找到，就继续往后滑动
+            current = current.next
+            
+        } while(current !== this.head)
     }
+    /**
+     * 双向循环链表的反转，双向循环链表反转比较简单，仅交换前后驱指向，最后更新一下this.head的指向就好了。
+     */
+    reverse() {
+        if(!this.head) {
+            return
+        }
+        let current = this.head
+        do {
+            // 交换前后驱节点指向
+            const next = current.next
+            current.next = current.pre
+            current.pre = next
 
-    reverse() {}
+            // 滑动
+            current = next
+        } while(current !== this.head)
+        // 修正一下 this.head指向， 此时current是第一个，此时第一个的下一个就是最后一个（因为已经反转完了）
+        this.head = current.next
+    }
 }
 
 function test1(){
     const dts = new DCLinkTable();
    dts.add(1)
-     dts.add(3)
+    // dts.add(3)
 //    dts.add(5)
 //     dts.add(7)
 //     dts.add(9)
     // dts.remove(1)
-    dts.remove(3)
-    // dts.reverse()
-    // dts.insertAfter(4,3)
+   // dts.remove(3)
+    // 
+   // dts.insertAfter(8,7)
+    dts.reverse()
     // dts.insertAfter(5,6)
     // dts.insertAfter(9,10)
     console.log(dts)
