@@ -4,7 +4,46 @@
  */
 
 
+/**
+ * 递归方式求解求爬n台台阶的总方法数
+ * 递推公式，方法总数： f(n) = f(n-2) + f(n-1)
+ * @param {*} n 
+ * @returns 爬n台台阶的总方法数
+ */
 function climbStairs(n) {
+    const cache = new Map()
+    /**
+     * 内部递归方法，递归方式求解爬n台台阶的所有方法数
+     * @param {*} n 
+     * @returns 
+     */
+    function climb(n) {
+        if(n === 0) return 0
+        if(n === 1) return 1
+        if(n === 2) return 2
+        // 使用备忘录缓存
+        const cachedN = cache.get(n)
+        if(cachedN !== undefined) {
+            return cachedN
+        }
+        const result = climb(n-2) + climb(n-1)
+        cache.set(n, result) // 存入缓存
+        return result        
+    }
+    return climb(n)
+}
+
+
+/**
+ * 动态规划方式求解，从底（小）向上解
+ * 时间复杂度： O(n)
+ * 空间复杂度： O(n)
+ * 最核心的步骤也是状态转移方程，跟递归的递推公式差不多
+ * dp[n] =  dp[n-2] + dp[n-1]; dp[0] = 0|1; dp[1] = 1; dp[2] = 2;
+ * @param {*} n 要上的总台阶数
+ * @returns 爬n台台阶的总方法数
+ */
+function climbStairsDP(n) {
     const dp = []
     dp[0] = 0
     dp[1] = 1
@@ -14,6 +53,28 @@ function climbStairs(n) {
     }
     return dp[n]
 }
+
+/**
+ * 动态规划方式求解爬楼梯问题，从底（小）向上解。基于上面的方法优化状态记录，从数组状态记录优化为三个变量，优化存储空间
+ * 时间复杂度： O(n)
+ * 空间复杂度： O(1)
+ * 原状态： dp[n] =  dp[n-2] + dp[n-1]; dp[0] = 0|1; dp[1] = 1; dp[2] = 2;
+ * 压缩为： next = pre + current; pre = 1, current = 2, next; pre、current、next滚动更新
+ * @param {*} n 要上的总台阶数
+ * @returns 爬n台台阶的总方法数
+ */
+function climbStairsDP2(n) {
+    let pre = 1, current = 2, next; //将数组状态滑动为三个变量状态
+    for(let i=3; i<=n; i++) {
+        next = pre + current
+        // 滑动更新变量状态
+        pre = current
+        current = next
+    }
+    return next
+}
+
+
 
 // https://leetcode-cn.com/problems/min-cost-climbing-stairs/
 
@@ -66,8 +127,16 @@ function  test1() {
     dp =     [0,0,2,]
 }
 
+function test2() {
+    const n = 8
+    console.log(climbStairs(n))
+    console.log(climbStairsDP(n))
+    console.log(climbStairsDP2(n))
+    
+}
 function startTest() {
-    test1()
+    // test1()
+    test2()
 }
 
 startTest()
